@@ -3,21 +3,22 @@ import requests
 import json
 import sys, os
 
-path = "/Users/kkaczkow/development/workspace/relevant-search-book/ipython/tmdb.json"
+DB_PATH = os.path.abspath(os.path.dirname(__file__)) + "/../db/tmdb.json"
 ELASTICSEARCH_HOST = "localhost"
 ELASTICSEARCH_PORT = "9200"
 
-def extract():
+def extract(db_path):
+    print "Extracting..."
     try:
-        f = open(path)
+        db = open(db_path)
     except IOError:
-        print "ERROR: No such file or directory: "+path
+        print "ERROR: No such file or directory: " + db_path
         exit(1)
 
-    if f:
-        return json.loads(f.read());
+    if db:
+        return json.loads(db.read());
 
-def reindex(analysisSettings={}, mappingSettings={}, movieDict={}):
+def reindex(analysisSettings = {}, mappingSettings = {}, movieDict = {}):
     settings = {
         "settings": {
             "number_of_shards": 1,
@@ -27,7 +28,7 @@ def reindex(analysisSettings={}, mappingSettings={}, movieDict={}):
     if mappingSettings:
        settings['mappings'] = mappingSettings
     
-    "Deleting the old index..."
+    print "Deleting the old index..."
     try:
         resp = requests.delete("http://localhost:9200/tmdb")
     except requests.exceptions.ConnectionError: 
@@ -36,7 +37,7 @@ def reindex(analysisSettings={}, mappingSettings={}, movieDict={}):
     print "Creating the index..."
     try:
         resp = requests.put("http://localhost:9200/tmdb",
-                    data=json.dumps(settings))
+                    data = json.dumps(settings))
     except requests.exceptions.ConnectionError:
         handle_connection_error("tmdb")
 
@@ -53,7 +54,7 @@ def handle_connection_error(context):
     print "ERROR: Connection refused: " + "http://"+ELASTICSEARCH_HOST + "/" + ELASTICSEARCH_PORT + "/" + context
     exit(1)
 
-def reindex_with_english_analyzer():    
+def reindex_with_english_analyzer(movieDict):
     mappingSettings = {
         "movie": {
             "properties": {
@@ -68,7 +69,6 @@ def reindex_with_english_analyzer():
             }
         }
     }
-    movieDict = extract()
     reindex(mappingSettings=mappingSettings, movieDict=movieDict)
 
 def search(query):
@@ -100,12 +100,12 @@ def get_query():
             }
         }
     }
-    print "Searching phrase: "+usersSearch
+    print "Searching phrase: " + usersSearch
     return query
 
 def main():
-    movieDict = extract()
-    reindex_with_english_analyzer()
+    movieDict = extract(DB_PATH)
+    reindex_with_english_analyzer(movieDict)
     query = get_query()
     search(query)
     #validate_query(query)
