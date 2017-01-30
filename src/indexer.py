@@ -4,6 +4,7 @@ import json
 ELASTICSEARCH_HOST = "localhost"
 ELASTICSEARCH_PORT = "9200"
 
+# reindexes into Elasticsearch with the passed-in TMDB movie dictionary, analysis set- tings, and field mappings
 def reindex(analysisSettings = {}, mappingSettings = {}, movieDict = {}):
     settings = {
         "settings": {

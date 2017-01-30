@@ -3,6 +3,7 @@ import sys, os
 from src import search
 from src import io
 from src import indexer
+from src import analyzer
 
 DB_PATH = os.path.abspath(os.path.dirname(__file__)) + "/db/tmdb.json"
 
@@ -22,6 +23,24 @@ def reindex_with_english_analyzer(movieDict):
         }
     }
     indexer.reindex(mappingSettings = mappingSettings, movieDict = movieDict)
+
+def get_analysis_chain():
+    analysisSettings = {
+        "filter": {
+            "acronyms": {
+                "type": "word_delimiter",
+                "catenate_all": true,
+                "generate_word_parts": false,
+                "generate_number_parts": false }
+        },
+        "analyzer": {
+            "standard_with_acronyms": {
+                "tokenizer": "standard",
+                "filter": ["standard","lowercase","acronyms"]
+            }
+        }
+    }
+    return analysisSettings
 
 def get_query(explain):
     if len(sys.argv) > 1:
@@ -43,7 +62,10 @@ def get_query(explain):
 
 def main():
     movieDict = io.extract(DB_PATH)
-    reindex_with_english_analyzer(movieDict)
+    mappingSettings = analyzer.get_mapping()
+    analysisSettings = analyzer.get_analysis_chain()
+    indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
+
     query = get_query(explain = False)
     search.run(query)
     #search.validate(query)

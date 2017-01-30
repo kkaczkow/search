@@ -13,6 +13,7 @@ def run(query):
          return explain(query)
     return search(query)
 
+# searches the TMDB Elasticsearch index with the provided Elasticsearch Query DSL query
 def search(query):
     print "Searching...\n"
     url = 'http://localhost:9200/tmdb/movie/_search'
@@ -37,9 +38,11 @@ def explain(query):
     print "Explain for %s" % jsonResp['hits']['hits'][0]['_source']['title']
     print json.dumps(jsonResp['hits']['hits'][0]['_explanation'], indent=True)
 
+# debugs matching
 def validate(query):
     print "Validating..."
+    query.pop('explain', None)
     httpResp = requests.get('http://localhost:9200' +
                    '/tmdb/movie/_validate/query?explain',
                     data=json.dumps(query))
-    print json.loads(httpResp.text)
+    print json.dumps(json.loads(httpResp.text), indent=4, sort_keys=True)
