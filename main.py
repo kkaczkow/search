@@ -23,16 +23,18 @@ def reindex_with_english_analyzer(movieDict):
     }
     indexer.reindex(mappingSettings = mappingSettings, movieDict = movieDict)
 
-def get_query():
+def get_query(explain):
     if len(sys.argv) > 1:
         usersSearch = str(sys.argv[1])
     else:
         usersSearch = 'basketball with cartoon aliens'
+
     query = {
+        "explain": explain,
         "query": {
             "multi_match": {
                 "query": usersSearch,
-                "fields": ["title^10", "overview"],
+                "fields": ["title^0.1", "overview"],
             }
         }
     }
@@ -42,7 +44,7 @@ def get_query():
 def main():
     movieDict = io.extract(DB_PATH)
     reindex_with_english_analyzer(movieDict)
-    query = get_query()
+    query = get_query(explain = False)
     search.run(query)
     #search.validate(query)
 

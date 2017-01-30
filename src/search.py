@@ -9,6 +9,11 @@ def handle_connection_error(context):
     exit(1)
 
 def run(query):
+    if query['explain'] is True:
+         return explain(query)
+    return search(query)
+
+def search(query):
     print "Searching...\n"
     url = 'http://localhost:9200/tmdb/movie/_search'
     try:
@@ -20,6 +25,17 @@ def run(query):
     print "Num\tRelevance Score\t\tMovie Title"
     for idx, hit in enumerate(searchHits['hits']):
         print "%s\t%s\t\t%s" % (idx + 1, hit['_score'], hit['_source']['title'])
+
+def explain(query):
+    print "Score computation...\n"
+    url = 'http://localhost:9200/tmdb/movie/_search'
+    try:
+        httpResp = requests.get(url, data=json.dumps(query))
+    except requests.exceptions.ConnectionError:
+        handle_connection_error("tmdb/movie/_search")
+    jsonResp = json.loads(httpResp.text)
+    print "Explain for %s" % jsonResp['hits']['hits'][0]['_source']['title']
+    print json.dumps(jsonResp['hits']['hits'][0]['_explanation'], indent=True)
 
 def validate(query):
     print "Validating..."
