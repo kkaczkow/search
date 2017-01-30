@@ -23,7 +23,9 @@ def get_analysis_chain():
                 "type": "word_delimiter",
                 "catenate_all": True,
                 "generate_word_parts": False,
-                "generate_number_parts": False }
+                "generate_number_parts": False,
+                "preserve_original": True
+            }
         },
         "analyzer": {
             "standard_with_acronyms": {

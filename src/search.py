@@ -1,11 +1,9 @@
 import requests
 import json
-
-ELASTICSEARCH_HOST = "localhost"
-ELASTICSEARCH_PORT = "9200"
+import common
 
 def handle_connection_error(context):
-    print "ERROR: Connection refused: " + "http://"+ELASTICSEARCH_HOST + "/" + ELASTICSEARCH_PORT + "/" + context
+    print "ERROR: Connection refused: " + "http://"+common.ELASTICSEARCH_HOST + "/" + common.ELASTICSEARCH_PORT + "/" + context
     exit(1)
 
 def run(query):
