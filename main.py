@@ -25,15 +25,18 @@ def get_query(explain):
     print "Searching phrase: " + usersSearch
     return query
 
+def reindex():
+    movieDict = io.extract(common.DB_PATH)
+    mappingSettings = analyzer.get_mapping()
+    analysisSettings = analyzer.get_analysis_chain()
+    indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
+
 # primitive CLI
 def main():
     if len(sys.argv) == 2 and str(sys.argv[1]) == "reindex":
-        movieDict = io.extract(common.DB_PATH)
-        mappingSettings = analyzer.get_mapping()
-        analysisSettings = analyzer.get_analysis_chain()
-        indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
+        reindex()
     elif len(sys.argv) in (1,2):
-        query = get_query(explain = False)
+        query = get_query(explain = common.EXPLAIN)
         search.run(query)
         #search.validate(query)
     else:

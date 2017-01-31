@@ -6,3 +6,5 @@ ELASTICSEARCH_U = "elastic"
 ELASTICSEARCH_P = "changeme"
 DB_PATH = os.path.abspath(os.path.dirname(__file__)) + "/../db/tmdb.json"
 
+EXPLAIN = False
+

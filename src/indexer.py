@@ -1,9 +1,6 @@
-import requests
-from requests.auth import HTTPBasicAuth
+import rest
 import json
 import common
-
-requests.get('https://www.instapaper.com/api/authenticate', auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
 
 # reindexes into Elasticsearch with the passed-in TMDB movie dictionary, analysis set- tings, and field mappings
 def reindex(analysisSettings = {}, mappingSettings = {}, movieDict = {}):
@@ -22,19 +19,11 @@ def reindex(analysisSettings = {}, mappingSettings = {}, movieDict = {}):
 
 def delete_index():
     print "Deleting the old index..."
-    try:
-        resp = requests.delete("http://localhost:9200/tmdb",
-                               auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
-    except requests.exceptions.ConnectionError:
-        handle_connection_error("tmdb")
+    rest.delete("http://localhost:9200/tmdb")
 
 def create_index(settings):
     print "Creating the index..."
-    try:
-        resp = requests.put("http://localhost:9200/tmdb", data = json.dumps(settings),
-                            auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
-    except requests.exceptions.ConnectionError:
-        handle_connection_error("tmdb")
+    rest.put("http://localhost:9200/tmdb", data = json.dumps(settings))
 
 def insert_data(movieDict):
     print "Inserting data into the index..."
@@ -45,12 +34,4 @@ def insert_data(movieDict):
                             "_id": movie["id"]}}
         bulkMovies += json.dumps(addCmd) + "\n" + json.dumps(movie) + "\n"
 
-    try:
-        resp = requests.post("http://localhost:9200/_bulk", data = bulkMovies,
-                             auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
-    except requests.exceptions.ConnectionError:
-        handle_connection_error("_bulk")
-
-def handle_connection_error(context):
-    print "ERROR: Connection refused: " + "http://"+ELASTICSEARCH_HOST + "/" + ELASTICSEARCH_PORT + "/" + context
-    exit(1)
+    rest.post("http://localhost:9200/_bulk", data = bulkMovies)
