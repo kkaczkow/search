@@ -25,15 +25,19 @@ def get_query(explain):
     print "Searching phrase: " + usersSearch
     return query
 
+# primitive CLI
 def main():
-    movieDict = io.extract(common.DB_PATH)
-    mappingSettings = analyzer.get_mapping()
-    analysisSettings = analyzer.get_analysis_chain()
-    indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
-
-    query = get_query(explain = False)
-    search.run(query)
-    #search.validate(query)
+    if len(sys.argv) == 2 and str(sys.argv[1]) == "reindex":
+        movieDict = io.extract(common.DB_PATH)
+        mappingSettings = analyzer.get_mapping()
+        analysisSettings = analyzer.get_analysis_chain()
+        indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
+    elif len(sys.argv) in (1,2):
+        query = get_query(explain = False)
+        search.run(query)
+        #search.validate(query)
+    else:
+        print "ERROR: Invalid number of arguments."
 
 if __name__ == '__main__':
     try:
