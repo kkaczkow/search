@@ -1,4 +1,5 @@
 import rest
+import sys
 import json
 import common
 import requests
@@ -15,8 +16,12 @@ def search(query):
     url = 'http://localhost:9200/tmdb/movie/_search'
     httpResp = requests.get(url, data=json.dumps(query),
                             auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+    try:
+        searchHits = json.loads(httpResp.text)['hits']
+    except KeyError:
+        print "ERROR: " + str(json.loads(httpResp.text)['error']['reason'])
+        sys.exit(1)
 
-    searchHits = json.loads(httpResp.text)['hits']
     print "Num\tRelevance Score\t\tMovie Title"
     for idx, hit in enumerate(searchHits['hits']):
         print "%s\t%s\t\t%s" % (idx + 1, hit['_score'], hit['_source']['title'])

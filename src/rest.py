@@ -12,15 +12,22 @@ def post(url, data):
 
 def put(url, data):
     try:
-        return requests.put(url, data, auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+        r = requests.put(url, data, auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+        r.raise_for_status()
     except requests.exceptions.ConnectionError:
         handle_connection_error(url)
+    except requests.exceptions.HTTPError as http_error:
+        print str(http_error)
+        exit(1)
 
 def delete(url):
     try:
-        return requests.delete(url, auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+        r = requests.delete(url, auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+        r.raise_for_status()
     except requests.exceptions.ConnectionError:
         handle_connection_error(url)
+    except requests.exceptions.HTTPError as http_error:
+        print "No resource to delete: "+url
 
 def get(url, data):
     try:
