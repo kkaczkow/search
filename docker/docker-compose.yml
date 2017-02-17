@@ -19,6 +19,7 @@ services:
       - IPC_LOCK
     volumes:
       - esdata1:/usr/share/elasticsearch/data
+      - ../analysis/synonym.txt:/usr/share/elasticsearch/analysis/synonym.txt
     ports:
       - 9200:9200
     networks:
@@ -42,6 +43,7 @@ services:
       - IPC_LOCK
     volumes:
       - esdata2:/usr/share/elasticsearch/data
+      - ../analysis/synonym.txt:/usr/share/elasticsearch/analysis/synonym.txt
     networks:
       - esnet
 

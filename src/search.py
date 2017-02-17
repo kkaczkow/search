@@ -14,8 +14,11 @@ def run(query):
 def search(query):
     print "Searching...\n"
     url = 'http://localhost:9200/tmdb/movie/_search'
-    httpResp = requests.get(url, data=json.dumps(query),
+    try:
+        httpResp = requests.get(url, data=json.dumps(query),
                             auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+    except requests.exceptions.ChunkedEncodingError as error:
+        rest.handle_error(error)
     try:
         searchHits = json.loads(httpResp.text)['hits']
     except KeyError:
