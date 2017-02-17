@@ -17,15 +17,15 @@ def reindex(analysisSettings = {}, mappingSettings = {}, movieDict = {}):
     insert_data(movieDict)
 
 def delete_index():
-    print "Deleting the old index..."
+    print "Deleting the old index: ",
     rest.delete("http://localhost:9200/tmdb")
 
 def create_index(settings):
-    print "Creating the index..."
+    print "Creating the index: ",
     rest.put("http://localhost:9200/tmdb", data = json.dumps(settings))
 
 def insert_data(movieDict):
-    print "Inserting data into the index..."
+    print "Inserting data into the index: ",
     bulkMovies = ""
     for id, movie in movieDict.iteritems():
         addCmd = {"index": {"_index": "tmdb",

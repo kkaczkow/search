@@ -22,7 +22,7 @@ def get_query(explain):
             }
         }
     }
-    print "Searching phrase: " + usersSearch
+    print "Searching phrase: \"" + usersSearch + "\""
     return query
 
 def reindex():

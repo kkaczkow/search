@@ -25,11 +25,11 @@ def get_analysis_chain():
         "filter": {
             "retail_syn_filter_index": {
                 "type": "synonym",
-                "synonyms": ["abc => fbi"]
+                "synonyms_path" : "analysis/synonym.txt"
             },
             "retail_syn_filter_search": {
                 "type": "synonym",
-                "synonyms": ["abc => fbi"]
+                "synonyms_path" : "analysis/synonym.txt"
             }
         },
         "analyzer": {
