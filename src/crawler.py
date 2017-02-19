@@ -1,3 +1,5 @@
+# example: userSearch = 'basketball with cartoon aliens'
+
 import rest
 import sys
 import json
@@ -10,15 +12,31 @@ def run(query):
          return explain(query)
     return search(query)
 
+def get_query(userSearch, explain):
+
+    query = {
+        "explain": explain,
+        "query": {
+            "multi_match": {
+                "query": userSearch,
+                "fields": ["title^0.1", "overview"],
+            }
+        }
+    }
+    print "Searching phrase: \"" + userSearch + "\""
+    return query
+
 # searches the TMDB Elasticsearch index with the provided Elasticsearch Query DSL query
 def search(query):
     print "Searching...\n"
     url = 'http://localhost:9200/tmdb/movie/_search'
+    #httpResp = rest.get(url, data=query)
     try:
         httpResp = requests.get(url, data=json.dumps(query),
                             auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
     except requests.exceptions.ChunkedEncodingError as error:
         rest.handle_error(error)
+
     try:
         searchHits = json.loads(httpResp.text)['hits']
     except KeyError:

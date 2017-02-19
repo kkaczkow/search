@@ -3,7 +3,7 @@ import utils
 
 # returns a dictionary mapping movie ID to movie details from tmdb.json, reflecting the TMDB source data model
 def extract(db_path):
-    print "Extracting: ",
+    print "Extracting data: ",
     try:
         db = open(db_path)
         print utils.get_green_print("Success.")

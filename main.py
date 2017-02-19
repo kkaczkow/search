@@ -1,29 +1,11 @@
 # example invocation: python search.py "basketball with aliens"
 import sys, os
-
-from src import search
+from src import crawler
 from src import io
 from src import indexer
 from src import analyzer
 from src import common
-
-def get_query(explain):
-    if len(sys.argv) > 1:
-        usersSearch = str(sys.argv[1])
-    else:
-        usersSearch = 'basketball with cartoon aliens'
-
-    query = {
-        "explain": explain,
-        "query": {
-            "multi_match": {
-                "query": usersSearch,
-                "fields": ["title^0.1", "overview"],
-            }
-        }
-    }
-    print "Searching phrase: \"" + usersSearch + "\""
-    return query
+from src import utils
 
 def reindex():
     movieDict = io.extract(common.DB_PATH)
@@ -31,16 +13,22 @@ def reindex():
     analysisSettings = analyzer.get_analysis_chain()
     indexer.reindex(analysisSettings = analysisSettings, mappingSettings = mappingSettings, movieDict = movieDict)
 
+def search(userSearch):
+    query = crawler.get_query(userSearch, explain = common.EXPLAIN)
+    crawler.run(query)
+
 # primitive CLI
 def main():
-    if len(sys.argv) == 2 and str(sys.argv[1]) == "reindex":
+    try:
+        command = sys.argv[1]
+    except IndexError:
+        print utils.get_red_print("ERROR: ")+"Invalid number of arguments."
+        sys.exit(1)
+
+    if command == "reindex":
         reindex()
-    elif len(sys.argv) in (1,2):
-        query = get_query(explain = common.EXPLAIN)
-        search.run(query)
-        #search.validate(query)
     else:
-        print "ERROR: Invalid number of arguments."
+        search(sys.argv[1])
 
 if __name__ == '__main__':
     try:
