@@ -23,27 +23,45 @@ def get_analysis_chain():
     # analysis:
     analysisSettings = {
         "filter": {
-            "retail_syn_filter_index": {
+            "index_filter": {
                 "type": "synonym",
                 "synonyms_path" : "analysis/synonym.txt"
             },
-            "retail_syn_filter_search": {
+            "search_filter": {
                 "type": "synonym",
                 "synonyms_path" : "analysis/synonym.txt"
+            },
+            "english_stop": {
+                "type":       "stop",
+                "stopwords":  "_english_"
+            },
+            "english_stemmer": {
+                "type":       "stemmer",
+                "language":   "english"
+            },
+            "english_possessive_stemmer": {
+                "type":       "stemmer",
+                "language":   "possessive_english"
             }
         },
         "analyzer": {
             "retail_analyzer_index": {
                 "tokenizer": "standard",
                 "filter": [
+                    "english_possessive_stemmer",
                     "lowercase",
-                    "retail_syn_filter_index"]
+                    "english_stop",
+                    "english_stemmer",
+                    "index_filter"]
             },
             "retail_analyzer_search": {
                 "tokenizer": "standard",
                 "filter": [
+                    "english_possessive_stemmer",
                     "lowercase",
-                    "retail_syn_filter_search"]
+                    "english_stop",
+                    "english_stemmer",
+                    "search_filter"]
             }
         }
     }
