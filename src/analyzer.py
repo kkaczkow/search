@@ -63,7 +63,7 @@ def get_analysis_chain():
                 "type": "shingle",
                 "max_shingle_size":2,
                 "min_shingle_size":2,
-                "output_unigrams":"false"
+                "output_unigrams":"true"
             },
             "english_stop": {
                 "type":       "stop",
