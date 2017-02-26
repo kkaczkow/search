@@ -12,6 +12,34 @@ def get_mapping():
                     "type": "string",
                     "analyzer": "retail_analyzer_index",
                     "search_analyzer": "retail_analyzer_search"
+                },
+                "cast": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "analyzer": "english",
+                            "fields": {
+                                "bigrammed": {
+                                    "type": "string",
+                                    "analyzer": "english_bigrams"
+                                }
+                            }
+                        }
+                    }
+                },
+                "directors": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "analyzer": "english",
+                            "fields": {
+                                "bigrammed": {
+                                    "type": "string",
+                                    "analyzer": "english_bigrams"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -30,6 +58,12 @@ def get_analysis_chain():
             "search_filter": {
                 "type": "synonym",
                 "synonyms_path" : "analysis/synonym.txt"
+            },
+            "bigram_filter": {
+                "type": "shingle",
+                "max_shingle_size":2,
+                "min_shingle_size":2,
+                "output_unigrams":"false"
             },
             "english_stop": {
                 "type":       "stop",
@@ -62,6 +96,16 @@ def get_analysis_chain():
                     "english_stop",
                     "english_stemmer",
                     "search_filter"]
+            },
+            "english_bigrams": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": [
+                    "standard",
+                    "lowercase",
+                    "porter_stem",
+                    "bigram_filter"
+                ]
             }
         }
     }

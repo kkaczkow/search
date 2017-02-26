@@ -5,6 +5,7 @@ import sys
 import json
 import common
 import requests
+import utils
 from requests.auth import HTTPBasicAuth
 
 def run(query):
@@ -24,7 +25,7 @@ def get_query(userSearch, explain):
             }
         }
     }
-    print "Searching phrase: \"" + userSearch + "\""
+    print "Searching phrase: \"" + utils.get_yellow_print(userSearch) + "\""
     return query
 
 # searches the TMDB Elasticsearch index with the provided Elasticsearch Query DSL query
