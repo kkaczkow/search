@@ -5,19 +5,20 @@ def get_mapping():
             "properties": {
                 "title": {
                     "type": "string",
-                    "analyzer": "retail_analyzer_index",
-                    "search_analyzer": "retail_analyzer_search"
+                    "analyzer": "index_analyzer",
+                    "search_analyzer": "query_analyzer"
                 },
                 "overview": {
                     "type": "string",
-                    "analyzer": "retail_analyzer_index",
-                    "search_analyzer": "retail_analyzer_search"
+                    "analyzer": "index_analyzer",
+                    "search_analyzer": "query_analyzer"
                 },
                 "cast": {
                     "properties": {
                         "name": {
                             "type": "string",
                             "analyzer": "english",
+                            "copy_to": "people.name",
                             "fields": {
                                 "bigrammed": {
                                     "type": "string",
@@ -28,6 +29,21 @@ def get_mapping():
                     }
                 },
                 "directors": {
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "analyzer": "english",
+                            "copy_to": "people.name",
+                            "fields": {
+                                "bigrammed": {
+                                    "type": "string",
+                                    "analyzer": "english_bigrams"
+                                }
+                            }
+                        }
+                    }
+                },
+                "people": {
                     "properties": {
                         "name": {
                             "type": "string",
@@ -55,7 +71,7 @@ def get_analysis_chain():
                 "type": "synonym",
                 "synonyms_path" : "analysis/synonym.txt"
             },
-            "search_filter": {
+            "query_filter": {
                 "type": "synonym",
                 "synonyms_path" : "analysis/synonym.txt"
             },
@@ -79,23 +95,23 @@ def get_analysis_chain():
             }
         },
         "analyzer": {
-            "retail_analyzer_index": {
+            "index_analyzer": {
                 "tokenizer": "standard",
                 "filter": [
                     "english_possessive_stemmer",
                     "lowercase",
+                    "index_filter",
                     "english_stop",
-                    "english_stemmer",
-                    "index_filter"]
+                    "english_stemmer"]
             },
-            "retail_analyzer_search": {
+            "query_analyzer": {
                 "tokenizer": "standard",
                 "filter": [
                     "english_possessive_stemmer",
                     "lowercase",
+                    "query_filter",
                     "english_stop",
-                    "english_stemmer",
-                    "search_filter"]
+                    "english_stemmer"]
             },
             "english_bigrams": {
                 "type": "custom",

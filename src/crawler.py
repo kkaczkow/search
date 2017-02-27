@@ -20,7 +20,7 @@ def get_query(userSearch, explain):
         "query": {
             "multi_match": {
                 "query": userSearch,
-                "fields": ["title^0.2", "overview", "cast.name.bigrammed", "directors.name.bigrammed"],
+                "fields": ["title", "overview", "people.name"],
                 "type": "most_fields"
             }
         }
