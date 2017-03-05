@@ -1,12 +1,13 @@
 # example: userSearch = 'basketball with cartoon aliens'
 
-import rest
+import src.rest
 import sys
 import json
-import common
+from src import common
 import requests
-import utils
+import src.utils
 from requests.auth import HTTPBasicAuth
+from strategy import query_strategy
 
 def run(query):
     if query['explain'] is True:
@@ -14,18 +15,13 @@ def run(query):
     return search(query)
 
 def get_query(userSearch, explain):
+    strategy_query = query_strategy[common.SEARCH_STRATEGY](userSearch)
 
     query = {
         "explain": explain,
-        "query": {
-            "multi_match": {
-                "query": userSearch,
-                "fields": ["title", "overview", "people.name"],
-                "type": "most_fields"
-            }
-        }
+        "query": strategy_query
     }
-    print "Searching phrase: \"" + utils.get_yellow_print(userSearch) + "\""
+    print "Searching phrase: \"" + src.utils.get_yellow_print(userSearch) + "\""
     return query
 
 # searches the TMDB Elasticsearch index with the provided Elasticsearch Query DSL query
@@ -35,9 +31,9 @@ def search(query):
     #httpResp = rest.get(url, data=query)
     try:
         httpResp = requests.get(url, data=json.dumps(query),
-                            auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
+                                auth=HTTPBasicAuth(common.ELASTICSEARCH_U, common.ELASTICSEARCH_P))
     except requests.exceptions.ChunkedEncodingError as error:
-        rest.handle_error(error)
+        src.rest.handle_error(error)
 
     try:
         searchHits = json.loads(httpResp.text)['hits']
@@ -63,6 +59,6 @@ def explain(query):
 def validate(query):
     print "Validating..."
     query.pop('explain', None)
-    httpResp = rest.get('http://localhost:9200' + '/tmdb/movie/_validate/query?explain',
-                        data=json.dumps(query))
+    httpResp = src.rest.get('http://localhost:9200' + '/tmdb/movie/_validate/query?explain',
+                            data=json.dumps(query))
     print json.dumps(json.loads(httpResp.text), indent=4, sort_keys=True)

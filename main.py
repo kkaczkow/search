@@ -1,11 +1,13 @@
 # example invocation: python search.py "basketball with aliens"
-import sys, os
-from src import crawler
-from src import io
-from src import indexer
+import sys
+
 from src import analyzer
 from src import common
+from src import indexer
+from src import io
 from src import utils
+from src.search import crawler
+
 
 def reindex():
     movieDict = io.extract(common.DB_PATH)
